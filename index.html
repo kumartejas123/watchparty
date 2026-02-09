@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Private Cinema</title>
     <style>
         :root {
@@ -12,63 +12,80 @@
             --text-main: #e1e1e1;
             --chat-me: #075e54;
             --chat-them: #2a2a2a;
+            --header-height: 50px;
         }
+
+        * { box-sizing: border-box; }
 
         body { 
             margin: 0; 
             background: var(--bg-dark); 
             color: var(--text-main); 
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
-            display: flex; 
-            height: 100vh; 
-            width: 100vw;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden; 
         }
 
-        /* Responsive Layout */
-        #main-container {
+        header {
+            height: var(--header-height);
+            background: var(--panel-bg);
             display: flex;
-            width: 100%;
-            height: 100%;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #222;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--accent);
         }
 
-        @media (max-width: 850px) {
-            #main-container { flex-direction: column; }
-            #video-section { flex: none !important; height: 60%; }
-            #chat-section { border-left: none !important; border-top: 1px solid #222; }
+        #main-container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
         }
 
         /* Video Section */
         #video-section { 
-            flex: 3; 
+            flex: 2.5; 
             display: flex; 
             flex-direction: column; 
             padding: 15px; 
-            background: #000; 
+            background: #000;
+            overflow-y: auto;
         }
 
-        #player-wrapper { 
-            width: 100%; 
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9); 
+        /* Responsive 16:9 Aspect Ratio */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        #player { width: 100%; height: 100%; max-height: 80vh; }
+        .video-container iframe, #player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
 
         #controls { 
             margin-top: 15px; 
             display: flex; 
-            gap: 10px; 
+            flex-wrap: wrap;
+            gap: 8px; 
             background: var(--panel-bg); 
-            padding: 12px; 
+            padding: 10px; 
             border-radius: 10px; 
-            border: 1px solid #222;
         }
 
         /* Chat Section */
@@ -77,35 +94,27 @@
             display: flex; 
             flex-direction: column; 
             background: var(--panel-bg); 
-            min-width: 320px; 
             border-left: 1px solid #222;
-            position: relative;
+            min-width: 300px;
         }
 
         #messages { 
             flex: 1; 
             overflow-y: auto; 
-            padding: 20px; 
+            padding: 15px; 
             display: flex; 
             flex-direction: column; 
-            gap: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: #333 transparent;
+            gap: 8px;
         }
-
-        /* Custom Scrollbar for Chrome/Safari */
-        #messages::-webkit-scrollbar { width: 5px; }
-        #messages::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
         .msg { 
             background: var(--chat-them); 
-            padding: 10px 14px; 
-            border-radius: 15px; 
-            max-width: 80%; 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            max-width: 85%; 
             word-wrap: break-word;
-            font-size: 0.9rem; 
+            font-size: 14px; 
             line-height: 1.4; 
-            animation: fadeIn 0.2s ease; 
         }
 
         .me { 
@@ -118,69 +127,69 @@
             align-self: center; 
             background: transparent; 
             color: #666; 
-            font-size: 0.75rem; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 10px 0;
+            font-size: 11px; 
+            margin: 5px 0;
         }
 
         #chat-input-area { 
-            padding: 15px; 
+            padding: 10px; 
             background: #1a1a1a;
             border-top: 1px solid #252525;
             display: flex; 
-            gap: 10px; 
+            gap: 8px; 
         }
 
-        /* Inputs & Buttons */
         input { 
-            padding: 12px 15px; 
-            border-radius: 8px; 
+            padding: 10px; 
+            border-radius: 6px; 
             border: 1px solid #333; 
             background: #222; 
             color: white; 
             flex-grow: 1; 
-            outline: none; 
-            font-size: 14px; 
-            transition: border 0.3s;
+            font-size: 14px;
         }
-        input:focus { border-color: var(--accent); }
 
         button { 
-            padding: 10px 18px; 
+            padding: 10px 15px; 
             cursor: pointer; 
             background: var(--accent); 
             color: white; 
             border: none; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            transition: 0.2s; 
+            border-radius: 6px; 
+            font-weight: 600;
+            white-space: nowrap;
         }
-        button:hover { opacity: 0.9; transform: scale(1.02); }
-        button:active { transform: scale(0.98); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Responsive Mobile Tweak */
+        @media (max-width: 850px) {
+            #main-container { flex-direction: column; }
+            #chat-section { border-left: none; height: 50%; }
+            #video-section { flex: none; padding: 10px; }
+            #controls input { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
+<header>PRIVATE CINEMA</header>
+
 <div id="main-container">
     <div id="video-section">
-        <div id="player-wrapper">
+        <div class="video-container">
             <div id="player"></div>
         </div>
         <div id="controls">
-            <input type="text" id="youtube-url" placeholder="Paste YouTube Link or ID...">
+            <input type="text" id="youtube-url" placeholder="Paste YouTube Link...">
             <button onclick="changeVideo()">Sync Video</button>
         </div>
     </div>
 
     <div id="chat-section">
         <div id="messages">
-            <div class="msg system-msg">Private Session Started</div>
+            <div class="msg system-msg">Session Started</div>
         </div>
         <div id="chat-input-area">
-            <input type="text" id="chat-msg" placeholder="Type a message..." autocomplete="off" onkeypress="if(event.key==='Enter') sendMessage()">
+            <input type="text" id="chat-msg" placeholder="Message..." autocomplete="off" onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
@@ -190,7 +199,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Same Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyA_kyackw_r8suEblO8hl0MNTTl2qWEgAI",
         authDomain: "watchparty-cb025.firebaseapp.com",
@@ -218,13 +226,13 @@
     window.onYouTubeIframeAPIReady = () => {
         player = new YT.Player('player', {
             videoId: 'dQw4w9WgXcQ', 
-            playerVars: { 'autoplay': 1, 'controls': 1, 'rel': 0, 'modestbranding': 1 },
+            playerVars: { 'autoplay': 1, 'controls': 1, 'rel': 0, 'modestbranding': 1, 'playsinline': 1 },
             events: { 'onStateChange': onPlayerStateChange }
         });
     };
 
     function onPlayerStateChange(event) {
-        if (!isUpdatingFromDB) {
+        if (!isUpdatingFromDB && (event.data === 1 || event.data === 2)) {
             set(videoRef, {
                 time: player.getCurrentTime(),
                 state: event.data,
@@ -239,21 +247,23 @@
         if (!data || data.sender === myId) return;
         isUpdatingFromDB = true;
         const diff = Math.abs(player.getCurrentTime() - data.time);
-        if (diff > 1.5) player.seekTo(data.time, true);
+        if (diff > 2) player.seekTo(data.time, true);
         if (data.state === 1) player.playVideo();
         if (data.state === 2) player.pauseVideo();
-        setTimeout(() => { isUpdatingFromDB = false; }, 600);
+        setTimeout(() => { isUpdatingFromDB = false; }, 1000);
     });
 
     window.changeVideo = () => {
         const url = document.getElementById('youtube-url').value;
         let vidId = "";
-        if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
-        else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
-        else vidId = url;
+        try {
+            if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
+            else vidId = url;
+        } catch(e) { vidId = url; }
 
-        if (vidId) {
-            set(currentVidRef, vidId);
+        if (vidId.trim()) {
+            set(currentVidRef, vidId.trim());
             document.getElementById('youtube-url').value = "";
         }
     };
